@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<head>
+<base href="<%=basePath%>">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>天猫商城</title>
+<link href="resources/css/bootstrap.min.css" rel="stylesheet">
+<link href="resources/css/style.css" rel="stylesheet">
+<script src="resources/js/jquery.min.js" type="text/javascript"></script>
+<script src="resources/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="resources/js/layui.js" type="text/javascript"></script>
+	<!--import引入-->
+	<link rel="import" href="views/include/top.html" id="page1"/>
+	<link rel="import" href="views/include/footer.html" id="page2"/>
+</head>
+<!--import在头部引入，里面是啥就是啥-->
+<script type="text/javascript">
+	document.write(page1.import.body.innerHTML);
+</script>
+<body>
+
+
+	<!-- 中间内容 -->
+	<div class="container-fluid bigHead" id="maincart">
+		<div class="row" style="background-color:white;">
+			<div class="col-sm-9  col-md-8 col-sm-offset-1 col-md-offset-2">
+				<div class="jumbotron">
+					<h1>欢迎来到购物车</h1>
+					<p>您的购物车清单为</p>
+				</div>
+			</div>
+			<div class="col-sm-9  col-md-8 col-sm-offset-1 col-md-offset-2">
+				<form id="cartForm" >
+
+				<table class="table table-hover center" id="shoppingCarTable"></table>
+				<hr/>
+				<div style='text-align:right;width:1000px;height:50px;font-size:16px;color:red;'>已选
+					<span id="totalNum">0</span>件&nbsp;&nbsp;&nbsp;总价：<span id='totalPrice'>0</span>元</div>
+				<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-4"></div>
+					<button type="button" class="btn btn-danger btn-lg col-lg-4 col-md-4 col-sm-4"
+							lay-submit lay-filter="*" >购物结算</button>
+
+
+					<!--					onclick="confirmPre();"-->
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+	<!-- 尾部 -->
+
+<script type="text/javascript">
+	var layer;
+	var form;
+	layui.use(['layer', 'table','form'], function ()
+	        {
+	            layer = layui.layer;
+				form =layui.form;
+
+
+
+				form.on('submit(*)',function(){
+					$.ajax({
+						type:"post",
+						url:"cart/preOrder.do",
+						data:$("#cartForm").serialize(),
+						success:function(data){
+							console.log(data);
+							if(data.code ==1){
+								layer.msg("购买成功！",{icon:1,time:2000},function(){
+									 window.location.href="confirm_order.html";
+								});
+							}else{
+								layer.msg("购买失败，请重试！",{icon:5,time:2000});
+							}
+						}
+					});
+					return false;
+				});
+
+
+	        });
+
+
+	$(function(){
+		$.ajax({
+			type : 'POST',
+			url : 'cart/selectAllByUser.do',
+			dataType : 'json',
+			success : function(arr) {
+				var arr = arr.info;
+
+				if(arr!=null&&arr!=""){
+						var str='<tr>'+
+						'<th>是否购买<input onclick="selectAll();" type="checkbox" id="allSelect"></th>'+
+						'<th>商品图</th>'+
+						'<th>商品名称</th>'+
+						'<th>商品单价</th>'+
+						'<th>商品数量</th>'+
+						'<th>总价</th>'+
+						'<th>删除</th>'+
+						'</tr>';
+					for(var i=0;i<arr.length;i++){
+						str=str+'<tr id="goodsData'+arr[i].cartId+'">'+
+						'<td>'+
+						'<div class="checkbox">'+
+						'<label>'+
+						'<input type="checkbox" name="goodslist" value="'+arr[i].cartId+'">'+
+						'</label>'+
+						'</div>'+
+						'</td>'+
+						'<td><img style="height:40px;" src="img/shangping/'+ arr[i].product.id+'.png"/>'+
+						'<td><a style="text-decoration:none" href="product_detail.html?id='+arr[i].product.id+'">'+arr[i].product.name+'</a></td>'+
+						'<td><span id="singlePrice'+arr[i].cartId+'">'+arr[i].product.price+'</span></td>'+
+						'<td><button type="button" onclick="reduceNum('+arr[i].cartId+')" class="btn btn-info" id="reduce'+arr[i].cartId+'">-' +
+								'</button><span style="width:50px;height:25px;display:inline-block;" id="num'+arr[i].cartId+'">'+arr[i].cartNum+'</span>' +
+								'<button type="button" onclick="addNum('+arr[i].cartId+');" class="btn btn-info" id="add'+arr[i].cartId+'">+</button></td>'+
+						'<td><span id="totalPrice'+arr[i].cartId+'">'+arr[i].cartNum*arr[i].product.price+'</span>元</td>'+
+						'<td><button class="btn btn-warning" type="button" onclick="deleteCart('+arr[i].cartId+')">删除</button></td>'+
+						'</tr>';
+					}
+					$("#shoppingCarTable").html(str);
+					$("input[name='goodslist']").bind("click",function(){
+						changeTotal();
+						var flag=checkAll();
+						$("#allSelect").prop("checked",flag);
+					})
+				}else{
+					var empty="<div style='width:100%;height:500px;'><div style='text-align:center;padding-top:100px;'>"+
+					"<img src='../upload/emptycart.png'><p><h3>亲，您的购物车里还没有物品哦，赶紧去<a href='view/index'>逛逛</a>吧!</h3></p></div></div>";
+					$("#maincart").html(empty);
+				}
+			},
+			error : function(result) {
+				layer.alert('查询错误');
+			}
+		});
+	});
+
+	//选择全部
+	function selectAll(){
+		var flag=$("#allSelect").prop("checked");
+		var arr=$("input[name='goodslist']");
+		for(var i=0;i<arr.length;i++){
+			$(arr[i]).prop("checked",flag);
+		}
+		changeTotal();
+	}
+	function checkAll(){
+		var arr=$("input[name='goodslist']");
+		for(var i=0;i<arr.length;i++){
+			if(!$(arr[i]).prop("checked")){
+				return false;
+			}
+		}
+		return true;
+	}
+	function changeTotal(){
+		var arr=$("input[name='goodslist']");
+
+		var totalPrice=0;
+		var num=0;
+		for(var i=0;i<arr.length;i++){
+			if($(arr[i]).prop("checked")){
+				num++;
+				var cartId=$(arr[i]).val();
+				var singleTotal=parseInt($("#totalPrice"+cartId).html());
+				totalPrice+=singleTotal;
+			}
+		}
+		$("#totalPrice").html(totalPrice);
+		$("#totalNum").html(num);
+	}
+	//购买数据减少
+	function reduceNum(id){
+		var num=parseInt($("#num"+id).html());
+		num--;
+		if(num<=0){
+			$(this).attr("disabled",true);
+		}else{
+			$.ajax({
+				type: "POST",
+				url: "cart/reduceCartNum.do?cartId="+id,
+				success:function(data){
+					if(data=="success"){
+						$("#num"+id).html(num);
+						refreshPrice(id);
+					}
+				}
+			});
+		}
+	}
+	//进行购买数据的增加
+	function addNum(id){
+		var num=parseInt($("#num"+id).html());
+		num++;
+		$("reduceNum"+id).attr("disabled",false);
+		$.ajax({
+			type: "get",
+			url: "cart/addCartNum.do?cartId="+id,
+			success:function(data){
+				if(data=="success"){
+					$("#num"+id).html(num);
+					refreshPrice(id);
+				}
+			}
+		});
+		changeTotal();
+	}
+	//总价根据购买数据量变化而变化
+	function refreshPrice(id){
+		var num=parseInt($("#num"+id).html());
+		var singlePrice=parseInt($("#singlePrice"+id).html());
+		var total=num*singlePrice;
+		$("#totalPrice"+id).html(total);
+		changeTotal();
+	}
+	//删除购物车数据
+	function deleteCart(id){
+		layer.confirm("真的要删除吗？",function(){
+			$.ajax({
+				type:"post",
+				url:"cart/deleteCart.do?cartId="+id,
+				success:function(data){
+					if(data=="success"){
+						layer.msg('删除成功', { icon: 1, shade: 0.4, time: 1000 });
+					}else{
+						layer.msg('删除失败', { icon: 5, shade: 0.4, time: 1000 });
+					}
+					$("#goodsData"+id).remove();
+				}
+			});
+		})
+	}
+	//选择购物车数据
+	function confirmPre() {
+		var num = parseInt($("#totalNum").html());
+
+
+		if (num < 1) {
+			layer.msg('请选择购买的商品！', {icon: 5, anim: 6, shade: 0.4, time: 1000});
+		} else {
+			$("#cartForm").submit();
+
+		}
+	}
+
+
+
+
+
+
+
+	//选择购物车数据
+	// function confirmPre() {
+	// 	var num = parseInt($("#totalNum").html());
+	// 	if (num < 1) {
+	// 		layer.msg('请选择购买的商品！', {icon: 5, anim: 6, shade: 0.4, time: 1000});
+	// 	} else {
+	// 		$("#cartForm").submit(function () {
+	// 			var checkStatus = table.checkStatus('shoppingCarTable');
+	// 			var count = checkStatus.data.length;//选中的行数
+	// 			console.log(count);
+	//
+	//
+	// 		});
+	// 	}
+	// }
+
+
+	//#region --------------批量删除----------------
+	$("#delete").click(function () {
+		var checkStatus = table.checkStatus('goods');
+		var count = checkStatus.data.length;//选中的行数
+		if (count > 0) {
+			parent.layer.confirm('确定要删除所选商品？', { icon: 3 }, function (index)
+			{
+				var data = checkStatus.data; //获取选中行的数据
+				var batchId = '';
+				for (var i = 0; i < data.length; i++)
+				{
+					batchId += data[i].goodsId + ",";
+				}
+				$.ajax({
+					url: '',
+					type: "post",
+					data: { 'batchId': batchId },
+					success: function (result){
+						if (result=="success"){
+							parent.layer.msg('删除成功', { icon: 1, shade: 0.4, time: 1000 })
+							$("#search").click();//重载TABLE
+						}else{
+							parent.layer.msg("删除失败", { icon: 5, shade: [0.4], time: 1000 });
+						}
+						parent.layer.close(index);
+					}
+				})
+			});
+		}
+		else
+			parent.layer.msg("请至少选择一条数据", { icon: 5, shade: 0.4, time: 1000 });
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+<!--import在底部引入，里面是啥就是啥-->
+<script type="text/javascript">
+	document.write(page2.import.body.innerHTML);
+</script>
+</html>

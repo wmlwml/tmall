@@ -1,0 +1,117 @@
+
+<html>
+<head>
+    <title>模仿天猫-前端</title>
+    <meta charset="utf-8">
+
+    <script src="../../js/jquery/2.0.0/jquery.min.js"></script>
+    <link href="../../assets/css/bootstrap.css" rel="stylesheet">
+    <script src="../../js/bootstrap/3.3.6/bootstrap.min.js"></script>
+    <link href="../../css/fore/style.css" rel="stylesheet">
+    <script type="text/javascript">
+        //在线用户查询
+        $(function () {
+            $.ajax({
+                type: "post",
+                url:"user/activeUser.do",
+                dataType: "json",
+                success:function (data) {
+                    if (data.code == 1) {
+                        $("#onUser").html(data.info)
+                        //onLine = 1;
+                        //div 两个哪个显示呢？
+                        $("#regBlock").css("display", "none");
+                        $("#userBlock").css("display", "block");
+                    } else {
+                        // alert("还未登录");
+                        // window.location.href = "login.html";
+                        //div 两个哪个显示呢？
+                        $("#regBlock").css("display", "block");
+                        $("#userBlock").css("display", "none");
+                    }
+                }
+            })
+        });
+
+        //购物车数据
+        $(function () {
+            $.ajax({
+                type: "post",
+                url:"cart/selectCountByUser.do",
+                dataType: "json",
+                success:function (data) {
+                    if (data.code == 1) {
+                        $("#cartTotalItemNumber").html(data.info)
+
+                    } else {
+                        // alert("还未登录");
+                        window.location.href = "login.html";
+
+                    }
+                }
+            })
+        });
+
+    </script>
+</head>
+<body>
+
+<nav id="site-nav" role="navigation">
+    <div class="workArea" id="regBlock">
+        <span><a href="index.html">喵，欢迎来天猫 </a></span>
+        <span ><a href="loginPage.html">请登录</a></span>
+        <span><a href="register.html">免费注册</a></span>
+        <span class="pull-right">
+            <a href="usercenter.html">我的订单</a>
+            <a href="shopping_cart.html">
+                <span class="glyphicon glyphicon-shopping-cart redColor"></span>
+                购物车<strong id="cartTotalItemNumber1">0</strong>件
+            </a>
+        </span>
+    </div>
+
+    <div class="workArea" id="userBlock">
+        <span><a href="index.html">喵，欢迎来天猫 </a></span>
+        <span id="onUser"><a href="loginPage.html"></a></span>
+        <span><a href="usercenter.html">个人中心</a></span>
+        <span class="pull-right">
+            <a href="usercenter.html">我的订单</a>
+            <a href="shopping_cart.html">
+                <span class="glyphicon glyphicon-shopping-cart redColor"></span>
+                购物车<strong id="cartTotalItemNumber">0</strong>件
+            </a>
+            <span><a href="javascript:;" id="loginout" onclick="exit()">退出</a></span>
+
+        </span>
+
+
+    </div>
+</nav>
+</body>
+
+<script>
+    function exit() {
+        $.ajax({
+            type: "post",
+            url: "user/exitUser.do",
+            dataType: "json",
+            //回调函数
+            success:function(data){
+                if (data.code == 1){
+                    window.location.href = "index.html"
+                }else {
+                    window.location.href = "login.html";
+
+                }
+            }
+        })
+    }
+
+
+
+
+
+
+</script>
+</html>
+

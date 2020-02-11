@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<head>
+<base href="<%=basePath%>">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>天猫商城</title>
+<link href="resources/css/bootstrap.min.css" rel="stylesheet">
+<link href="resources/css/style.css" rel="stylesheet">
+<link href="resources/css/layui.css" rel="stylesheet">
+<script src="resources/js/jquery.min.js" type="text/javascript"></script>
+<script src="resources/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="resources/js/layui.js" type="text/javascript"></script>
+	<!--import引入-->
+	<link rel="import" href="views/include/top.html" id="page1"/>
+	<link rel="import" href="views/include/footer.html" id="page2"/>
+</head>
+<script>
+	document.write(page1.import.body.innerHTML);
+</script>
+<body>
+
+	<!-- 中间内容 -->
+	<div class="container-fluid bigHead">
+		<div class="row" style="background-color:white;">
+			<div class="col-sm-10  col-md-10 col-sm-offset-1 col-md-offset-1">
+				<div class="jumbotron">
+					<h1>欢迎来到结算页</h1>
+					<p>您的商品清单为</p>
+				</div>
+			</div>
+			<div class="col-sm-10  col-md-10 col-sm-offset-1 col-md-offset-1">
+			<form id="orderForm" >
+				<h2>请选择收货地址</h2>
+				<table>
+							 <div class="layui-form-item">
+
+							    <label class="layui-form-label">
+							    	<input type="radio" name="addr" value="地球村 潘多拉街道 天星66号 江湖第一高收">
+							    </label>
+							    <div class="layui-input-block">
+							      <label style="padding-top:7px;">地球村 潘多拉街道 天星66号&nbsp;江湖第一高收&nbsp;110120119</label>
+							    </div>
+
+
+<!--								 <div class="layui-input-block">-->
+<!--								 <label class="layui-form-label">商品名称</label>-->
+
+<!--									 <input type="text" name="name" id="goodsName"-->
+<!--											lay-verify="required" placeholder="请输入商品名称" value=""-->
+<!--											class="layui-input" />-->
+<!--									 <input type="text" name="name" id="2"-->
+<!--											lay-verify="required" placeholder="请输入商品名称" value=""-->
+<!--											class="layui-input" />-->
+<!--								 </div>-->
+
+
+
+                              </div>
+							<button type="button" onclick="javascript:location.href='usercenter.html/#section3'" class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal">去添加地址</button>
+				</table>
+
+
+
+				<table class="table table-hover center" id="shoppingCarTable">
+
+				</table>
+				<hr />
+				<div style='text-align:right;width:1000px;height:50px;font-size:16px;color:red;'>
+                    <h3>总价：<span id='qTotal'>0</span>元</h3>
+                </div>
+				<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-4"></div>
+					<button type="button"
+						class="btn btn-success btn-lg col-lg-4 col-md-4 col-sm-4" lay-submit lay-filter="*"
+						onclick="confirmPre()">确认下单</button>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+	<!-- 尾部 -->
+
+<script type="text/javascript">
+
+	var layer;
+	var form;
+	layui.use(['layer','form'], function ()
+	        {
+	            layer = layui.layer;
+	            form =layui.form;
+
+	            //总价
+                $(function(){
+                    var arr=$("span[name='qTotal']");
+                    console.log(arr);
+                    var total=0;
+                    for(var i=0;i<arr.length;i++){
+                        var price=parseInt($(arr[i]).html());
+                        total+=price;
+                    }
+                    $("#qTotal").html(total);
+                });
+
+	        });
+
+
+
+	$(function(){
+		$.ajax({
+			type : 'POST',
+			url : 'cart/presentOrder.do',
+			dataType : 'json',
+			success : function(arr) {
+				var arr = arr.info;
+
+				if(arr!=null&&arr!=""){
+					var str='<tr>'+
+							'<th>商品图</th>'+
+							'<th>商品名称</th>'+
+							'<th>商品单价</th>'+
+							'<th>商品数量</th>'+
+							'<th>总价</th>'+
+							'</tr>';
+					for(var i=0;i<arr.length;i++){
+						str=str+'<tr id="goodsData'+arr[i].cartId+'">'+
+								'<td><img style="height:40px;" src="img/shangping/'+ arr[i].product.id+'.png"/>'+
+								'<td><a style="text-decoration:none" href="product_detail.html?id='+arr[i].product.id+'">'+arr[i].product.name+'</a></td>'+
+								'<td><span id="singlePrice'+arr[i].cartId+'">'+arr[i].product.price+'</span></td>'+
+								'<td><button type="button" onclick="reduceNum('+arr[i].cartId+')" class="" id="reduce'+arr[i].cartId+'">' +
+								'</button>' +
+								'<span style="width:50px;height:25px;display:inline-block;" id="num'+arr[i].cartId+'">'+arr[i].cartNum+'</span>' +
+								// '<td><span id="totalPrice'+arr[i].cartId+'">'+arr[i].cartNum*arr[i].product.price+'</span>元</td>'+
+								'<td><span name="qTotal" id="totalPrice">'+arr[i].cartNum*arr[i].product.price+'</span>元</td>'+
+
+								'</tr>';
+					}
+					$("#shoppingCarTable").html(str);
+					// $("input[name='goodslist']").bind("click",function(){
+					//     changeTotal();
+					//     var flag=checkAll();
+					//     $("#allSelect").prop("checked",flag);
+					// })
+				}else{
+					var empty="<div style='width:100%;height:500px;'><div style='text-align:center;padding-top:100px;'>"+
+							"<img src='../upload/emptycart.png'><p><h3>亲，还没有物品哦，赶紧去<a href='index.html'>逛逛</a>吧!</h3></p></div></div>";
+					$("#maincart").html(empty);
+				}
+			},
+			error : function(result) {
+				layer.alert('查询错误');
+			}
+		});
+	});
+
+
+
+	function confirmPre(){
+		var flag=checkSelect();
+		if(!flag){
+			layer.msg('请选择收货地址', { icon: 5, anim: 6 ,shade: 0.4, time: 1000 });
+		}else{
+			//$("#orderForm").submit();
+			//下单 提交
+			form.on('submit(*)',function(){
+				$.ajax({
+					type:"post",
+					url:"cart/takeOrderAdd.do",
+					data:$("#orderForm").serialize(),
+					success:function(data){
+						console.log(data);
+						if(data=="success"){
+							layer.msg("购买成功！",{icon:1,time:2000},function(){
+								window.location.href="takeorder.html";
+							});
+						}else{
+							layer.msg("购买失败，请重试！",{icon:5,time:2000});
+						}
+					}
+				});
+				return false;
+			});
+
+		}
+	}
+
+
+
+
+	function checkSelect(){
+		var arr=$("input:radio[name='addr']:checked").val();
+		if(arr==null){
+			return false;
+		}
+		return true;
+	}
+
+
+	</script>
+</body>
+
+<script>
+	document.write(page2.import.body.innerHTML);
+</script>
+</html>

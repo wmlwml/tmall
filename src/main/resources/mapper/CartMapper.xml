@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qf.mapper.CartMapper" >
+  <resultMap id="BaseResultMap" type="com.qf.pojo.Cart" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="product_id" property="productId" jdbcType="INTEGER" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="checked" property="checked" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+  </resultMap>
+
+
+  <resultMap id="VCartResultMap" type="com.qf.vo.VCart" >
+    <id column="cartId" property="cartId" jdbcType="INTEGER" />
+    <result column="cartNum" property="cartNum" jdbcType="INTEGER" />
+    <result column="checked" property="checked" jdbcType="INTEGER" />
+    <result column="cartPrice" property="cartPrice" jdbcType="DOUBLE" />
+
+    <association property="product" javaType="product">
+      <id column="id" property="id"/>
+      <result column="name" property="name"/>
+      <result column="productPrice" property="price"/>
+      <result column="image" property="image"/>
+      <result column="state" property="state"/>
+    </association>
+  </resultMap>
+
+
+  <sql id="Base_Column_List" >
+    id, user_id, product_id, quantity, checked, create_time, update_time, price
+  </sql>
+<!--查询所有购物车-->
+  <select id="selectAllByUser" resultMap="VCartResultMap" parameterType="java.lang.Integer" >
+    select
+      c.id as cartId,
+      c.quantity as cartNum,
+      c.price as cartPrice,
+      c.checked as checked,
+      p.id,
+      p.name,
+      p.price as productPrice,
+      p.image,
+      p.state
+    from  cart c
+    inner join product p on p.id= c.product_id
+    where c.user_id=#{userId}
+  </select>
+
+  <!--根据用户id和商品id-->
+  <select id="selectByUserAndProduct" resultMap="BaseResultMap" parameterType="com.qf.pojo.Cart" >
+    select
+    id,
+    quantity,
+    user_id,
+    product_id
+    from  cart
+    <where>
+      <if test="userId != null">
+        user_id=#{userId}
+      </if>
+      <if test="productId != null">
+       and product_id=#{productId}
+      </if>
+    </where>
+  </select>
+
+  <!--查询所有购物车-->
+  <select id="selectAllPresent" resultMap="VCartResultMap" parameterType="java.lang.Integer" >
+    select
+      c.id as cartId,
+      c.quantity as cartNum,
+      c.price as cartPrice,
+      p.id,
+      p.name,
+      p.price as productPrice,
+      p.image
+    from  cart c
+            inner join product p on p.id= c.product_id
+    where c.id=#{id}
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cart
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cart
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qf.pojo.Cart" >
+    insert into cart (id, user_id, product_id, 
+      quantity, checked, create_time, 
+      update_time, price)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, 
+      #{quantity,jdbcType=INTEGER}, #{checked,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{price,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qf.pojo.Cart" >
+    insert into cart
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="quantity != null" >
+        quantity,
+      </if>
+      <if test="checked != null" >
+        checked,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null" >
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="checked != null" >
+        #{checked,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+
+<!--  更具id进行更新数据-->
+  <update id="updateByPrimaryKeySelective" parameterType="com.qf.pojo.Cart" >
+    update cart
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null" >
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="checked != null" >
+        checked = #{checked,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qf.pojo.Cart" >
+    update cart
+    set user_id = #{userId,jdbcType=INTEGER},
+      product_id = #{productId,jdbcType=INTEGER},
+      quantity = #{quantity,jdbcType=INTEGER},
+      checked = #{checked,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      price = #{price,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

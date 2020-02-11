@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../resources/css/layui.css">
+    <script type="text/javascript" src="../resources/js/jquery.1.12.4.min.js"></script>
+    <script type="text/javascript" src="../resources/js/layui.js"></script>
+</head>
+<body>
+<form class="layui-form" action="" lay-filter="example">
+
+
+
+
+
+
+<!--    <input type="layui-form-label" name="id" id="id1" >-->
+
+    <input type="hidden" name="id" id="id" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" id="name" required lay-verify="required" placeholder="请输入商品名称" value="" class="layui-input" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="subTitle" id="goodsPrice" required lay-verify="required" placeholder="请输入商品价格" value="" class="layui-input" />
+        </div>
+    </div>
+
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">商品类别</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <select name="courseId" id="categoryId" class="clazzName" lay-verify="required">-->
+<!--                <option value="">商品类别...</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品类别</label>
+        <div class="layui-input-block">
+            <select name="categoryId" id="clazzNameHide" class="clazzName" lay-verify="required">
+                <option value="">请选商品类别...</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品价格</label>
+        <div class="layui-input-block">
+            <input type="text" name="price" id="goodsNum" required lay-verify="required" placeholder="请输入价格" value="" class="layui-input" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品库存</label>
+        <div class="layui-input-block">
+            <input type="text" name="stock" id="stock" required lay-verify="required" placeholder="请输入库存" value="" class="layui-input" />
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">销量</label>
+        <div class="layui-input-block">
+            <input type="text" name="sale" id="goodsSale" required lay-verify="required" placeholder="请输入商品销量" value=""
+                   class="layui-input" />
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商品图片</label>
+        <img style="width:260px;height:180px;" src="" id="goodsImg">
+        <button type="button" class="layui-btn layui-btn-warm" id="uploadGoodsImg">
+            <i class="layui-icon">&#xe67c;</i>上传图片
+        </button>
+        <div style="display:inline-block;" id="newImg"></div>
+    </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="updateOne">立即修改</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+
+
+</form>
+<script>
+    layui.use(['form','layedit','laydate'],function () {
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        InitForm();
+        findThisVideo();
+
+
+
+        form.on('submit(updateOne)',function (data) {
+            $.ajax({
+                type:"get",
+                url:"../product/updateById.do",
+                data:data.field,
+
+                dataType:"json",
+                success:function (data) {
+                    if (data.code == 1) {
+
+                        layer.msg("修改成功!", {
+                            icon: 6,
+                            time: 500
+                        }, function () {
+                            var t = parent.layui.table;
+                            t.reload('goods');// 重新加载页面,demo 表示父窗体table标签的id值
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        });
+                    } else {
+                        layer.msg(data.info);
+                    }
+                },
+                error:function (data) {
+                    alert("ajax异常");
+                }
+            });
+            return false;
+        });
+
+        //
+        function findThisVideo() {
+            $.ajax({
+                type:"get",
+                //
+                url:"../product/findById.do"+window.location.search,
+                dataType:"json",
+                success:function (data) {
+                    if (data.code == 1) {
+                        form.val('example',data.info);
+                        $("#categoryId").val(data.info.categoryId);
+                        // $("#speakerId").val(data.info.speakerId);
+                    } else {
+                        alert(data.info);
+                    }
+                }
+            })
+
+        }
+
+        //下拉初始化
+        // function InitForm(){
+        //     $.ajax({
+        //         type: 'post',
+        //         url: '../criteriaInfo.do',
+        //         dataType: 'json',
+        //         success: function(criteriaMap){
+        //             if(criteriaMap.courseAll.length > 0){
+        //                 //加载类别
+        //                 var cId = $("#courseId").val();
+        //                 for(var i = 0;i < criteriaMap.courseAll.length; i++){
+        //                     var name = criteriaMap.courseAll[i].courseTitle;
+        //                     var value = criteriaMap.courseAll[i].id;
+        //                     if(cId == value){
+        //                         $(".clazzName").append('<option value="'+value+'" selected="">'+name+'</option>');
+        //                     }else{
+        //                         $(".clazzName").append('<option value="'+value+'">'+name+'</option>');
+        //                     }
+        //                 }
+        //                 //加载教师
+        //                 var sId = $("#speakerId").val();
+        //                 for(var i = 0;i < criteriaMap.speakerAll.length; i++){
+        //                     var name = criteriaMap.speakerAll[i].speakerName;
+        //                     var value = criteriaMap.speakerAll[i].id;
+        //                     if(sId == value){
+        //                         $(".tName").append('<option value="'+value+'" selected="">'+name+'</option>');
+        //                     }else{
+        //                         $(".tName").append('<option value="'+value+'">'+name+'</option>');
+        //                     }
+        //                 }
+        //                 form.render('select');
+        //             }else{
+        //                 layer.msg("下拉数据加载失败...");
+        //             }
+        //         }
+        //     })
+        // };
+
+        //下拉初始化
+        function InitForm(){
+            $.ajax({
+                type: 'post',
+                url: '../product/list.do',
+                dataType: 'json',
+                success: function(data){
+                    if(data.info.length > 0){
+                        //加载分类
+                        var clazzName = $("#clazzNameHide").val();
+                        for(var i = 0;i < data.info.length; i++){
+                            var name = data.info[i].name;
+                            var value = data.info[i].id;
+                            if(clazzName == value){
+                                $(".clazzName").append('<option value="'+value+'" selected="">'+name+'</option>');
+                            }else{
+                                $(".clazzName").append('<option value="'+value+'">'+name+'</option>');
+                            }
+                        }
+                        form.render('select');
+                    }else{
+                        layer.msg("下拉数据加载失败...");
+                    }
+                }
+            })
+        };
+
+
+    })
+
+</script>
+
+</body>
+</html>

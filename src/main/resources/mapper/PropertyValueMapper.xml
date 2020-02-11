@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qf.mapper.PropertyValueMapper" >
+  <resultMap id="BaseResultMap" type="com.qf.pojo.PropertyValue" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="product_id" property="productId" jdbcType="INTEGER" />
+    <result column="property_id" property="propertyId" jdbcType="INTEGER" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="PropertyValueModelMap" type="com.qf.vo.PropertyValueModel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="productId" property="productId" jdbcType="INTEGER" />
+    <result column="propertyId" property="propertyId" jdbcType="INTEGER" />
+    <result column="propertyName" property="propertyName" jdbcType="VARCHAR" />
+    <result column="propertyValue" property="propertyValue" jdbcType="VARCHAR" />
+
+  </resultMap>
+
+
+  <sql id="Base_Column_List" >
+    id, product_id, property_id, value
+  </sql>
+
+<!--综合查询 属性值管理 属性模糊查询-->
+  <select id="selectFindAll" resultMap="PropertyValueModelMap" parameterType="com.qf.vo.PropertyValueModel" >
+    SELECT
+    property_value.id,
+    property_value.product_id as productId,
+    property.id AS propertyId,
+    property.NAME AS propertyName,
+    property_value.value as propertyValue
+    FROM
+    property_value
+    INNER JOIN property ON property.id = property_value.property_id
+    <where>
+      <if test="productId != null">
+        property_value.product_id = #{productId,jdbcType=INTEGER}
+      </if>
+      <if test="searchInfo != null">
+        and name like "%${searchInfo}%"
+      </if>
+    </where>
+
+
+  </select>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from property_value
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from property_value
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qf.pojo.PropertyValue" >
+    insert into property_value (id, product_id, property_id, 
+      value)
+    values (#{id,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{propertyId,jdbcType=INTEGER}, 
+      #{value,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qf.pojo.PropertyValue" >
+    insert into property_value
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="propertyId != null" >
+        property_id,
+      </if>
+      <if test="value != null" >
+        value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="propertyId != null" >
+        #{propertyId,jdbcType=INTEGER},
+      </if>
+      <if test="value != null" >
+        #{value,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qf.pojo.PropertyValue" >
+    update property_value
+    <set >
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="propertyId != null" >
+        property_id = #{propertyId,jdbcType=INTEGER},
+      </if>
+      <if test="value != null" >
+        value = #{value,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qf.pojo.PropertyValue" >
+    update property_value
+    set product_id = #{productId,jdbcType=INTEGER},
+      property_id = #{propertyId,jdbcType=INTEGER},
+      value = #{value,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

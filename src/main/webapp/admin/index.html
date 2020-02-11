@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base href="<%=basePath%>">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>TMall商城后台管理</title>
+    <link rel="stylesheet" href="../resources/css/layui.css">
+    <script src="../resources/js/jquery.1.12.4.min.js"></script>
+    <script src="../resources/js/layui.js"></script>
+
+    <script>
+        //当前登录用户
+        $(function () {
+            $.ajax({
+                type: "post",
+                url: "../admin/activeUser.do",
+                dataType: "json",
+                success: function (data) {
+                    if (data.code == 1) {
+                        $("#loginUser").html("<img src=\"../upload/headpic.jpg\" class=\"layui-nav-img\" >" + data.info);
+                    } else {
+                        window.location.href = "../adminlogin.html";
+                    }
+                }
+            });
+        });
+
+    </script>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">TMall商城后台管理</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="welcome.html" target="myframe">主页</a></li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a href="info.html" id="loginUser">
+                <img src="../upload/headpic.jpg" class="layui-nav-img" >雷雷</a>
+            </li>
+            <li class="layui-nav-item"><a href="javascript:void (0)" onclick="exit()">退了</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+
+                <li class="layui-nav-item">
+                    <a class=""	href="javascript:;">分类管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="typelist.html" target="myframe">类型维护</a></dd>
+                        <dd><a href="goodslist.html" target="myframe">商品维护</a></dd>
+                        <dd><a href="goodsadd.html" target="myframe">商品添加</a></dd>
+                    </dl>
+
+                <li class="layui-nav-item">
+                    <a class=""	href="javascript:;">订单管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="orderlist.html" target="myframe">订单维护</a></dd>
+                        <dd><a href="evalist.html" target="myframe">评价维护</a></dd>
+                    </dl>
+                </li>
+    <!--权限管理-->
+                <li class="layui-nav-item">
+                    <a class=""	href="javascript:;">权限管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="userlist.html" target="myframe">用户管理</a></dd>
+                        <dd><a href="listAdmin.html" target="myframe">授权管理</a></dd>
+                    </dl>
+                </li>
+
+<!--                <li class="layui-nav-item">-->
+<!--                    <a class=""	href="javascript:;">评价管理</a>-->
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd><a href="evalist.html" target="myframe">评价维护</a></dd>-->
+<!--                        <dd><a href="userlist.html" target="myframe">授权管理</a></dd>-->
+<!--                    </dl>-->
+<!--                </li>-->
+
+                <li class="layui-nav-item">
+                    <a class=""	href="javascript:;">轮播管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="bannerlist.html" target="myframe">轮播图维护</a></dd>
+                        <dd><a href="banneradd.html" target="myframe">轮播图添加</a></dd>
+                    </dl>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <iframe src="welcome.html" name="myframe" style="width:1140px;height:550px;border: 0;" ></iframe>
+
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © soulmate.leilei@qq.com 保留所有权限
+    </div>
+</div>
+
+<script>
+    //JavaScript代码区域
+    layui.use(['element','layer', 'table'], function() {
+        var element = layui.element;
+        var table = layui.table;
+        var layer = layui.layer;
+    });
+
+
+    function exit() {
+        $.ajax({
+            type: "post",
+            url: "../admin/exit.do",
+            data:$("form").serialize(),
+            dataType:"json",
+            //回调函数
+            success:function (data) {
+                if (data.code == 1) {
+                    window.location.href = "managerInfo.html"
+                } else {
+                    window.location.href = "../adminlogin.html";
+                }
+            }
+        })
+    }
+
+
+
+
+</script>
+</body>
+</html>

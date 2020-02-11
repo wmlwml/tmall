@@ -1,0 +1,151 @@
+*{
+	margin: 0px;
+	padding: 0px;
+}
+a{
+	text-decoration: none; /*去掉所有A标签的下划线*/
+}
+#toubu,#zhuti,#weibu{
+	margin: auto; /*整体居中*/
+}
+#toubu{
+	height: 100px;
+	border-bottom: 1px solid #A9A9A9;
+	box-shadow: 0px 1px 8px #999;
+}
+#zhuti{
+	height: 500px;
+	box-sizing: border-box;
+	padding-top: 20px;
+}
+#weibu{
+	height: 150px;
+	background-color: rgb(230,230,230);
+}
+.d11{
+	background: url(../img/a/QQ截图20180519153603.png) no-repeat;
+	width: 250px;
+	height: 80px;
+	background-size: cover;
+	float: left;/*浮动*/
+	margin: 10px 0px 10px 25px;
+}
+.d12{
+	float: left;
+	font-size: 18px;
+	color: #999;
+	margin: 40px 0px 40px 25px;
+}
+.d13{
+	float: right;
+	color: #999;
+	margin: 40px 25px 40px 0px;
+}
+.d13 a{
+	color: #F00;
+}
+.d13 a:hover{
+	color:crimson;
+}
+#weibu p{
+	text-align: center;
+	color:#777;
+	padding-top: 40px;
+}
+#weibu a{
+    display: inline-block; /*将底部的A标签转为块元素*/
+    margin: 0px 10px;
+    color: #777;
+    font-size: 14px;
+}
+#weibu a:hover{
+	text-decoration: underline;
+}
+.d2{
+	width: 600px;
+	height: 450px;
+	margin: auto; /*居中显示*/
+	position: relative;
+}
+.d21{
+	width: 600px;
+	height: 80px;
+}
+.d21>div{
+	float: left;
+	width: 190px;
+	height: 80px;
+	border-bottom:2px solid #CCC;
+	margin: 0px 5px;
+
+}
+.d21>div>p{
+	text-align: center;
+	margin-top: 5px;
+	font-size: 14px;
+	color: #999;
+}
+.d21>div>span{
+	box-sizing: border-box;/*固定宽高*/
+	background-color: #CCC;
+	text-align: center;
+	padding-top:4px;
+	display:inline-block;
+	height: 30px;
+	width: 30px;
+	font-size: 16px;
+	font-weight: bold;
+	border-radius: 50%;
+	margin:10px 0px 10px 80px;
+	color: #EEE;
+}
+.d21>div:nth-of-type(3){
+	border-bottom-color: #F00;
+}
+#i3{
+	background-color:rgb(196,0,0);
+}
+.d221{
+	background: url(../img/a/success1.png) no-repeat;
+	width: 40px;
+	height: 40px;
+	background-size: cover;
+	float: left;
+	margin: 100px 10px 0px 100px;
+}
+.d22 p{
+	float: left;
+	margin-top:110px;
+	font-size: 17px;
+	font-weight: bold;
+	color: #333;
+}
+#denglu{
+	display: inline-block;
+	height: 50px;
+	text-align: center;
+	line-height: 50px;
+	width: 185px;
+	color: #FFF;
+	background-color:rgb(196,0,0);
+	position: absolute;
+	bottom: 106px;
+	left: 205px;
+}
+#bangzhu{
+	box-sizing: border-box;
+	display: inline-block;
+	height: 100px;
+	width: 35px;
+	font-size: 15px;
+	text-align: center;
+	background-color: #aaa;
+	padding:10px 5px;
+	position:fixed;
+	right: 0px;
+	top: 50%;
+	color: #CCC;
+}
+#bangzhu:hover{
+	color: #FFF;
+}

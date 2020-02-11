@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--配置全局配置文件-->
+<configuration>
+
+
+
+<!--    给实体类设置别名-->
+    <typeAliases>
+<!--        <typeAlias type="com.qf.entity.User" alias="user"/>-->
+        <typeAlias type="com.qf.pojo.Admin" alias="admin"/>
+<!--        <typeAlias type="com.qf.entity.Video" alias="video"/>-->
+<!--        <typeAlias type="com.qf.entity.Subject" alias="subject"/>-->
+<!--        <typeAlias type="com.qf.entity.Course" alias="course"/>-->
+<!--        <typeAlias type="com.qf.entity.Speaker" alias="speaker"/>-->
+        <typeAlias type="com.qf.vo.VProduct" alias="vProduct"/>
+        <package name="com.qf.pojo"/>
+
+    </typeAliases>
+
+    <!--    可以设置分页插件-->
+    <plugins>
+        <!--        通常放在mapper 之前-->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!--            注册方言-->
+            <property name="helperDialect" value="mysql"/>
+        </plugin>
+    </plugins>
+
+</configuration>

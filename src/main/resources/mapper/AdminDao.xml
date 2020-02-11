@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qf.mapper.AdminDao">
+<!--定义sql  查询全字段-->
+    <sql id="selAll">
+        SELECT
+            id,
+            username,
+            password,
+            roles
+        FROM
+            admin
+    </sql>
+
+<!--根据用户名查询-->
+    <select id="findByName" parameterType="String" resultType="com.qf.pojo.Admin">
+        <include refid="selAll"></include>
+        where username=#{userName}
+    </select>
+
+    <!--查询所有-->
+    <select id="findAll" resultType="admin">
+        <include refid="selAll"/>
+    </select>
+
+    <!--    根据id查询-->
+    <select id="findById" resultType="admin" parameterType="integer">
+        <include refid="selAll"/>
+        <where>
+            id=#{id}
+        </where>
+    </select>
+
+<!--    删除数据-->
+    <delete id="delete" parameterType="integer">
+        delete from admin where id=#{id}
+    </delete>
+
+    <!--    添加数据-->
+    <insert id="add" parameterType="admin">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+
+        insert into admin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="roles != null">
+                roles
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="roles != null">
+                #{roles},
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新管理员数据信息-->
+    <update id="updateById" parameterType="admin">
+        update admin
+        <set>
+            <if test="userName != null">
+                username=#{userName},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="roles != null">
+                roles=#{roles}
+            </if>
+        </set>
+        where id=#{id}
+
+    </update>
+
+
+
+
+
+</mapper>
